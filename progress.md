@@ -20,9 +20,9 @@ This file is the visible progress board for implementation driven by `SDD Handle
 
 | Slice | Actor | Screens | Status | Openspec artifact | Last verification | Evidence |
 |------|-------|---------|--------|-------------------|-------------------|----------|
-| mission-funding-and-proof | Donor, Operator | D-01, D-02, D-03, D-04, D-05, O-01, O-02 | pending | `openspec/changes/mission-funding-and-proof/` | not run | Awaiting implementation and verification evidence |
-| logistics-operations | Coordinator | C-01, C-02, C-03, C-04 | pending | `openspec/changes/logistics-operations/` | not run | Awaiting implementation and verification evidence |
-| reporting-timeline | Donor, Operator | D-05, O-02 | pending | `openspec/changes/reporting-timeline/` | not run | Awaiting implementation and verification evidence |
+| mission-funding-and-proof | Donor, Operator | D-01, D-02, D-03, D-04, D-05, O-01, O-02 | in progress | `openspec/changes/mission-funding-and-proof/` | not run | Frontend: `apps/frontend/src/app/donor/` + `apps/frontend/src/app/operator/`. Backend: `apps/backend/` (FastAPI + SQLite). Awaiting Playwright verification. |
+| logistics-operations | Coordinator | C-01, C-02, C-03, C-04 | in progress | `openspec/changes/logistics-operations/` | not run | Frontend: `apps/frontend/src/app/coordinator/`. Backend: coordinator endpoints in `apps/backend/main.py`. Awaiting Playwright verification. |
+| reporting-timeline | Donor, Operator | D-05, O-02 | pending | `openspec/changes/reporting-timeline/` | not run | Awaiting slice 1 PASS. Timeline UI partially covered in D-05 and O-02. |
 
 ## Current Gate
 

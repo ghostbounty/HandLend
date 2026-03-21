@@ -30,6 +30,10 @@ All proposals, specs, designs, task lists, implementations, bugs, and PRs must r
 - Use `Ant Design` as the only approved UI component library for new UI work and UI refactors.
 - Before choosing or composing an `Ant Design` pattern, validate the interaction against `UX Spec _ Product Design Document.md`.
 - Keep `progress.md` current so work can resume cleanly after interruptions.
+- **ADR-009 — Glass theme:** Always use `useGlassTheme()` from `src/lib/glassTheme.ts` spread into `<ConfigProvider>`. Never override theme tokens per-component. Use `createStyles` from `antd-style` for all custom CSS.
+- **ADR-010 — Shell layout:** Use `GlassShell.tsx` (sidebar + bottom nav). The coordinator entry route is `/coordinator/dashboard`, not `/coordinator/company`. Active state is detected via `usePathname()`.
+- **ADR-011 — Home is Discovery Page:** `/` renders the hero + campaign grid + metrics. No role-selector card layout.
+- **ADR-008 — Frontend-first mockup (highest priority):** Every screen must be fully functional using mock data from `apps/frontend/src/lib/mockData.ts`. The backend is optional. No screen may block or show an error because the backend is down. State transitions (funding, sync, validation, settlement) are simulated client-side. Always implement mock-first, backend-second.
 
 ## How To Work In This Repo
 

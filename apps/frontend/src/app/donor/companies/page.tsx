@@ -3,12 +3,12 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
-  Tag, Button, Spin, Typography,
-  Progress, Space,
+  Tag, Spin, Typography, Progress, Space,
 } from 'antd'
 import {
   CheckCircleOutlined, ArrowRightOutlined,
   ClockCircleOutlined, ArrowLeftOutlined, HomeOutlined,
+  DollarOutlined, TeamOutlined, FireOutlined, AuditOutlined,
 } from '@ant-design/icons'
 import { createStyles } from 'antd-style'
 import { getCompaniesByDisaster } from '@/lib/api'
@@ -19,6 +19,22 @@ const { Title, Text } = Typography
 type Company = any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Disaster = any
+
+const POOL_DATA: Record<number, { raised: number; goal: number; urgency: string }> = {
+  1: { raised: 78000, goal: 100000, urgency: 'critical' },
+  2: { raised: 27000, goal: 50000, urgency: 'high' },
+  3: { raised: 9300, goal: 30000, urgency: 'medium' },
+  4: { raised: 15000, goal: 75000, urgency: 'critical' },
+  5: { raised: 42000, goal: 80000, urgency: 'high' },
+  6: { raised: 61000, goal: 120000, urgency: 'critical' },
+  7: { raised: 8500, goal: 40000, urgency: 'medium' },
+}
+
+function getUrgencyColor(urgency: string) {
+  if (urgency === 'critical') return '#ef4444'
+  if (urgency === 'high') return '#f97316'
+  return '#fbbf24'
+}
 
 function getTrustColor(score: number) {
   if (score >= 85) return '#4ade80'
@@ -71,7 +87,92 @@ const useStyles = createStyles(({ css }) => ({
     marginTop: 10,
     flexWrap: 'wrap',
   }),
-  card: css({
+  /* ─── Pool Card ─── */
+  poolCard: css({
+    background: 'rgba(45,212,191,0.06)',
+    backdropFilter: 'blur(16px)',
+    border: '1px solid rgba(45,212,191,0.2)',
+    borderRadius: 24,
+    padding: '28px 32px',
+    marginBottom: 32,
+  }),
+  poolHeader: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  }),
+  poolStats: css({
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: 16,
+    marginBottom: 20,
+    '@media (max-width: 640px)': { gridTemplateColumns: 'repeat(2, 1fr)' },
+  }),
+  poolStat: css({
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: 14,
+    padding: '14px 16px',
+  }),
+  contributeBtn: css({
+    width: '100%',
+    height: 52,
+    borderRadius: 14,
+    fontWeight: 700,
+    fontSize: 16,
+    background: '#2dd4bf',
+    border: 'none',
+    color: '#0f172a',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    '&:hover': {
+      filter: 'brightness(1.1)',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 8px 24px rgba(45,212,191,0.35)',
+    },
+  }),
+  daoBtn: css({
+    width: '100%',
+    height: 44,
+    borderRadius: 14,
+    fontWeight: 700,
+    fontSize: 15,
+    background: 'rgba(45,212,191,0.08)',
+    border: '1px solid rgba(45,212,191,0.3)',
+    color: '#2dd4bf',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 10,
+    '&:hover': {
+      background: 'rgba(45,212,191,0.14)',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 16px rgba(45,212,191,0.2)',
+    },
+  }),
+  /* ─── Section divider ─── */
+  sectionDivider: css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    margin: '8px 0 24px',
+  }),
+  dividerLine: css({
+    flex: 1,
+    height: 1,
+    background: 'rgba(255,255,255,0.08)',
+  }),
+  /* ─── Coordinator card ─── */
+  coordinatorCard: css({
     background: 'rgba(15,23,42,0.55)',
     backdropFilter: 'blur(12px)',
     border: '1px solid rgba(255,255,255,0.08)',
@@ -79,11 +180,9 @@ const useStyles = createStyles(({ css }) => ({
     padding: '24px',
     marginBottom: 16,
     transition: 'all 0.25s ease',
-    cursor: 'pointer',
     '&:hover': {
-      transform: 'translateY(-3px)',
-      boxShadow: '0 12px 36px rgba(0,0,0,0.35)',
-      border: '1px solid rgba(45,212,191,0.2)',
+      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+      border: '1px solid rgba(255,255,255,0.12)',
     },
   }),
   cardContent: css({
@@ -111,9 +210,9 @@ const useStyles = createStyles(({ css }) => ({
     borderRadius: 10,
     fontWeight: 700,
     fontSize: 13,
-    background: '#2dd4bf',
-    border: 'none',
-    color: '#0f172a',
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    color: 'rgba(255,255,255,0.85)',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
     display: 'flex',
@@ -122,9 +221,8 @@ const useStyles = createStyles(({ css }) => ({
     gap: 6,
     marginTop: 4,
     '&:hover': {
-      filter: 'brightness(1.1)',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 4px 12px rgba(45,212,191,0.35)',
+      background: 'rgba(255,255,255,0.14)',
+      color: '#fff',
     },
   }),
   summary: css({
@@ -163,15 +261,15 @@ const useStyles = createStyles(({ css }) => ({
   }),
   emptyState: css({
     textAlign: 'center',
-    padding: '60px 24px',
+    padding: '40px 24px',
     background: 'rgba(15,23,42,0.35)',
     backdropFilter: 'blur(12px)',
     border: '1px solid rgba(255,255,255,0.06)',
-    borderRadius: 20,
+    borderRadius: 16,
   }),
 }))
 
-function CompaniesContent() {
+function CampaignPoolContent() {
   const { styles } = useStyles()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -202,14 +300,22 @@ function CompaniesContent() {
     load()
   }, [disasterId, router])
 
-  function handleView(company: Company) {
+  const pool = POOL_DATA[disasterId] ?? { raised: 0, goal: 100000, urgency: 'medium' }
+  const pct = Math.round((pool.raised / pool.goal) * 100)
+  const urgencyColor = getUrgencyColor(pool.urgency)
+
+  function handleContribute() {
+    router.push('/donor/fund')
+  }
+
+  function handleViewCompany(company: Company) {
     router.push(`/donor/company/${company.id}?disaster_id=${disasterId}`)
   }
 
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-        <Spin size="large" tip="Loading companies..." />
+        <Spin size="large" tip="Loading campaign..." />
       </div>
     )
   }
@@ -223,7 +329,7 @@ function CompaniesContent() {
         <span>/</span>
         <span>{disaster?.name || `Disaster #${disasterId}`}</span>
         <span>/</span>
-        <span>Companies</span>
+        <span>Campaign Pool</span>
       </div>
 
       <button className={styles.backBtn} onClick={() => router.push('/donor/disasters')}>
@@ -232,10 +338,9 @@ function CompaniesContent() {
       </button>
 
       <div style={{ marginBottom: 28 }}>
-        <Title level={2} style={{ margin: 0 }}>Available Logistics Companies</Title>
+        <Title level={2} style={{ margin: 0 }}>Campaign Pool</Title>
         {disaster && (
           <div className={styles.contextTags}>
-            <Text type="secondary">For the emergency:</Text>
             <Tag style={{
               background: 'rgba(239,68,68,0.12)',
               border: '1px solid rgba(239,68,68,0.3)',
@@ -260,18 +365,113 @@ function CompaniesContent() {
         )}
       </div>
 
+      {/* ─── Pool Status Card (PRIMARY) ─── */}
+      <div className={styles.poolCard}>
+        <div className={styles.poolHeader}>
+          <div>
+            <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 4 }}>
+              Public Campaign Pool
+            </Text>
+            <Title level={3} style={{ margin: 0, color: '#fff' }}>
+              {disaster?.name || `Disaster #${disasterId}`} — Relief Fund
+            </Title>
+          </div>
+          <Tag style={{
+            background: `${urgencyColor}1a`,
+            border: `1px solid ${urgencyColor}4d`,
+            color: urgencyColor,
+            borderRadius: 24,
+            fontWeight: 700,
+            fontSize: 13,
+            padding: '4px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+            <FireOutlined />
+            {pool.urgency.charAt(0).toUpperCase() + pool.urgency.slice(1)} urgency
+          </Tag>
+        </div>
+
+        <Progress
+          percent={pct}
+          strokeColor={{ '0%': '#2dd4bf', '100%': '#38bdf8' }}
+          trailColor="rgba(255,255,255,0.08)"
+          strokeWidth={10}
+          style={{ marginBottom: 8 }}
+        />
+
+        <div className={styles.poolStats}>
+          <div className={styles.poolStat}>
+            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 4 }}>
+              Raised
+            </Text>
+            <Text strong style={{ color: '#2dd4bf', fontSize: 22 }}>
+              ${pool.raised.toLocaleString('en-US')}
+            </Text>
+          </div>
+          <div className={styles.poolStat}>
+            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 4 }}>
+              Goal
+            </Text>
+            <Text strong style={{ color: '#fff', fontSize: 22 }}>
+              ${pool.goal.toLocaleString('en-US')}
+            </Text>
+          </div>
+          <div className={styles.poolStat}>
+            <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 4 }}>
+              Funded
+            </Text>
+            <Text strong style={{ color: pct >= 75 ? '#4ade80' : '#fbbf24', fontSize: 22 }}>
+              {pct}%
+            </Text>
+          </div>
+        </div>
+
+        <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, display: 'block', marginBottom: 20 }}>
+          Funds are locked in escrow on Avalanche and released to coordinators only after validated last-mile delivery evidence is submitted.
+        </Text>
+
+        <button className={styles.contributeBtn} onClick={handleContribute} data-testid="contribute-pool-btn">
+          <DollarOutlined />
+          Contribute to Campaign Pool
+        </button>
+        <button
+          className={styles.daoBtn}
+          onClick={() => router.push(`/dao/${disasterId}`)}
+          data-testid="view-dao-btn"
+        >
+          <AuditOutlined />
+          View DAO Status
+        </button>
+      </div>
+
+      {/* ─── Coordinators Section (SECONDARY) ─── */}
+      <div className={styles.sectionDivider}>
+        <div className={styles.dividerLine} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap' as const }}>
+          <TeamOutlined style={{ color: 'rgba(255,255,255,0.4)' }} />
+          <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+            Entities with response capacity
+          </Text>
+        </div>
+        <div className={styles.dividerLine} />
+      </div>
+
+      <Text type="secondary" style={{ display: 'block', marginBottom: 20, fontSize: 13 }}>
+        The following coordinators are registered as capacity providers for this disaster. They will receive pool allocations upon submitting validated delivery evidence — they are not individual funding destinations.
+      </Text>
+
       {companies.length === 0 ? (
         <div className={styles.emptyState}>
-          <Title level={4} style={{ color: 'rgba(255,255,255,0.6)' }}>No companies available</Title>
-          <Text type="secondary">No logistics companies have been registered for this disaster yet.</Text>
+          <Text type="secondary">No coordinators registered for this disaster yet.</Text>
         </div>
       ) : (
         companies.map((company: Company) => (
           <div
             key={company.id}
-            className={styles.card}
-            onClick={() => handleView(company)}
-            data-testid={`company-card-${company.id}`}
+            className={styles.coordinatorCard}
+            data-testid={`coordinator-card-${company.id}`}
           >
             <div className={styles.cardContent}>
               <div className={styles.cardLeft}>
@@ -328,10 +528,11 @@ function CompaniesContent() {
                 />
                 <button
                   className={styles.viewBtn}
-                  onClick={e => { e.stopPropagation(); handleView(company) }}
+                  onClick={() => handleViewCompany(company)}
+                  data-testid={`view-coordinator-${company.id}`}
                 >
+                  View capacity details
                   <ArrowRightOutlined />
-                  View details
                 </button>
               </div>
             </div>
@@ -342,10 +543,10 @@ function CompaniesContent() {
   )
 }
 
-export default function CompaniesPage() {
+export default function CampaignPoolPage() {
   return (
     <Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}><Spin size="large" /></div>}>
-      <CompaniesContent />
+      <CampaignPoolContent />
     </Suspense>
   )
 }

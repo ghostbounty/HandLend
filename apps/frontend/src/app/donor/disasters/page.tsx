@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Tag, Button, Spin, Typography, Row, Col, Space, Badge } from 'antd'
-import {
-  EnvironmentOutlined, ThunderboltOutlined, ArrowRightOutlined,
-  ReloadOutlined, HomeOutlined,
-} from '@ant-design/icons'
+import { Spin, Typography, Button } from 'antd'
+import { ReloadOutlined, HomeOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { createStyles } from 'antd-style'
 import { getDisasters } from '@/lib/api'
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text } = Typography
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Disaster = any
 
 function getSeverityColor(severity: string) {
   switch (severity?.toLowerCase()) {
@@ -22,23 +22,10 @@ function getSeverityColor(severity: string) {
   }
 }
 
-function getSeverityLabel(severity: string) {
-  switch (severity?.toLowerCase()) {
-    case 'critical': return 'Critical'
-    case 'high': return 'High'
-    case 'medium': return 'Medium'
-    case 'low': return 'Low'
-    default: return severity
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Disaster = any
-
 const useStyles = createStyles(({ css }) => ({
   page: css({
     padding: '24px',
-    maxWidth: 1100,
+    maxWidth: 1280,
     margin: '0 auto',
     '@media (min-width: 768px)': { padding: '32px 40px' },
   }),
@@ -46,12 +33,10 @@ const useStyles = createStyles(({ css }) => ({
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
     color: 'rgba(255,255,255,0.45)',
     fontSize: 13,
     fontWeight: 600,
-    '& a': { color: 'rgba(255,255,255,0.55)', textDecoration: 'none' },
-    '& a:hover': { color: '#2dd4bf' },
   }),
   header: css({
     display: 'flex',
@@ -61,87 +46,165 @@ const useStyles = createStyles(({ css }) => ({
     flexWrap: 'wrap',
     gap: 12,
   }),
+  grid: css({
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: 20,
+    '@media (min-width: 640px)': { gridTemplateColumns: 'repeat(2, 1fr)' },
+    '@media (min-width: 1024px)': { gridTemplateColumns: 'repeat(3, 1fr)' },
+  }),
   card: css({
-    background: 'rgba(15,23,42,0.55)',
+    background: 'rgba(255,255,255,0.04)',
     backdropFilter: 'blur(12px)',
     border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: 20,
-    padding: '24px',
-    height: '100%',
+    borderRadius: 24,
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
-    transition: 'all 0.25s ease',
+    transition: 'all 0.2s ease',
     '&:hover': {
       transform: 'translateY(-4px)',
-      boxShadow: '0 16px 40px rgba(0,0,0,0.35)',
-      border: '1px solid rgba(45,212,191,0.25)',
+      boxShadow: '0 16px 40px rgba(0,0,0,0.3)',
+      border: '1px solid rgba(45,212,191,0.2)',
     },
   }),
-  cardHeader: css({
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
+  imgWrap: css({
+    overflow: 'hidden',
+    position: 'relative',
+    height: 200,
   }),
-  cardBody: css({
-    flex: 1,
+  img: css({
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+    transition: 'transform 0.5s ease',
+    '&:hover': { transform: 'scale(1.05)' },
+  }),
+  countryBadge: css({
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    padding: '4px 10px',
+    background: 'rgba(15,23,42,0.85)',
+    backdropFilter: 'blur(8px)',
+    borderRadius: 24,
+    color: '#2dd4bf',
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+  }),
+  activeBadge: css({
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    padding: '4px 10px',
+    background: 'rgba(239,68,68,0.85)',
+    backdropFilter: 'blur(8px)',
+    borderRadius: 24,
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 700,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+  }),
+  activeDot: css({
+    width: 6,
+    height: 6,
+    borderRadius: '50%',
+    background: '#fff',
+    display: 'inline-block',
+    animation: 'pulse 2s infinite',
+    '@keyframes pulse': {
+      '0%, 100%': { opacity: 1 },
+      '50%': { opacity: 0.4 },
+    },
+  }),
+  body: css({
+    padding: '20px',
     display: 'flex',
     flexDirection: 'column',
+    flex: 1,
+  }),
+  eventType: css({
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    color: '#a78bfa',
+    marginBottom: 8,
+  }),
+  name: css({
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: 700,
+    lineHeight: 1.3,
+    marginBottom: 10,
+  }),
+  severityRow: css({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  }),
+  severityDot: css({
+    width: 8,
+    height: 8,
+    borderRadius: '50%',
+    flexShrink: 0,
   }),
   description: css({
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 13,
     lineHeight: 1.6,
-    margin: '12px 0',
-    flex: 1,
     display: '-webkit-box',
     WebkitLineClamp: 3,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
+    marginBottom: 16,
+    flex: 1,
   }),
-  date: css({
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: 12,
-    fontWeight: 600,
+  progressWrap: css({
+    marginBottom: 16,
     marginTop: 'auto',
-    paddingTop: 12,
+  }),
+  progressBar: css({
+    width: '100%',
+    height: 6,
+    background: 'rgba(255,255,255,0.1)',
+    borderRadius: 4,
+    overflow: 'hidden',
+    margin: '6px 0',
+  }),
+  progressFill: css({
+    height: '100%',
+    background: 'linear-gradient(90deg, #2dd4bf, #38bdf8)',
+    borderRadius: 4,
+    transition: 'width 0.5s ease',
+  }),
+  footer: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
   }),
   selectBtn: css({
-    marginTop: 16,
-    width: '100%',
-    height: 44,
-    borderRadius: 12,
-    fontWeight: 700,
-    fontSize: 14,
-    background: '#2dd4bf',
-    border: 'none',
-    color: '#0f172a',
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
+    width: 36,
+    height: 36,
+    borderRadius: '50%',
+    background: 'rgba(45,212,191,0.12)',
+    border: '1px solid rgba(45,212,191,0.3)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    '&:hover': {
-      filter: 'brightness(1.1)',
-      transform: 'translateY(-1px)',
-      boxShadow: '0 4px 16px rgba(45,212,191,0.35)',
-    },
-  }),
-  statusDot: css({
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    background: '#ef4444',
-    display: 'inline-block',
-    marginRight: 6,
-    boxShadow: '0 0 8px rgba(239,68,68,0.5)',
-    animation: 'pulse 2s infinite',
-    '@keyframes pulse': {
-      '0%, 100%': { opacity: 1 },
-      '50%': { opacity: 0.5 },
-    },
+    color: '#2dd4bf',
+    fontSize: 16,
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+    flexShrink: 0,
+    '&:hover': { background: '#2dd4bf', color: '#0f172a' },
   }),
   fadeIn: css({
     animation: 'fadeInUp 0.4s ease-out',
@@ -188,13 +251,13 @@ export default function DisastersPage() {
       <div className={styles.breadcrumb}>
         <HomeOutlined />
         <span>/</span>
-        <span>Select disaster</span>
+        <span>Active Disasters</span>
       </div>
 
       <div className={styles.header}>
         <div>
           <Title level={2} style={{ margin: 0 }}>Active Disasters</Title>
-          <Text type="secondary">Select an emergency to explore available logistics companies</Text>
+          <Text type="secondary">Select an emergency to view its campaign pool and contribute</Text>
         </div>
         <Button
           icon={<ReloadOutlined spin={refreshing} />}
@@ -205,85 +268,89 @@ export default function DisastersPage() {
         </Button>
       </div>
 
-      <Row gutter={[20, 20]}>
-        {disasters.map((disaster: Disaster) => (
-          <Col key={disaster.id} xs={24} md={12} xl={8}>
+      <div className={styles.grid}>
+        {disasters.map((disaster: Disaster) => {
+          const severityColor = getSeverityColor(disaster.severity)
+          const pct = disaster.raised && disaster.goal
+            ? Math.round((disaster.raised / disaster.goal) * 100)
+            : 0
+
+          return (
             <div
+              key={disaster.id}
               className={styles.card}
               onClick={() => handleSelect(disaster)}
               data-testid={`disaster-card-${disaster.id}`}
             >
-              <div className={styles.cardHeader}>
-                <Title level={4} style={{ margin: 0, flex: 1, paddingRight: 8, color: '#fff' }}>
-                  {disaster.name}
-                </Title>
-                <span style={{ display: 'flex', alignItems: 'center', fontSize: 12, fontWeight: 600, color: '#ef4444', whiteSpace: 'nowrap' }}>
-                  <span className={styles.statusDot} />
-                  {disaster.status === 'active' ? 'Active' : disaster.status}
-                </span>
+              {/* Image */}
+              <div className={styles.imgWrap}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={disaster.image || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80`}
+                  alt={disaster.name}
+                  className={styles.img}
+                />
+                <span className={styles.countryBadge}>{disaster.country}</span>
+                {disaster.status === 'active' && (
+                  <span className={styles.activeBadge}>
+                    <span className={styles.activeDot} />
+                    Active
+                  </span>
+                )}
               </div>
 
-              <div className={styles.cardBody}>
-                <Space wrap size={6}>
-                  <Tag
-                    style={{
-                      background: 'rgba(45,212,191,0.12)',
-                      border: '1px solid rgba(45,212,191,0.3)',
-                      color: '#2dd4bf',
-                      borderRadius: 24,
-                      fontWeight: 600,
-                      fontSize: 11,
-                    }}
-                    icon={<EnvironmentOutlined />}
-                  >
-                    {disaster.country}
-                  </Tag>
-                  <Tag
-                    style={{
-                      background: 'rgba(139,92,246,0.12)',
-                      border: '1px solid rgba(139,92,246,0.3)',
-                      color: '#a78bfa',
-                      borderRadius: 24,
-                      fontWeight: 600,
-                      fontSize: 11,
-                    }}
-                    icon={<ThunderboltOutlined />}
-                  >
-                    {disaster.event_type}
-                  </Tag>
-                  <Tag
-                    style={{
-                      background: `${getSeverityColor(disaster.severity)}18`,
-                      border: `1px solid ${getSeverityColor(disaster.severity)}50`,
-                      color: getSeverityColor(disaster.severity),
-                      borderRadius: 24,
-                      fontWeight: 700,
-                      fontSize: 11,
-                    }}
-                  >
-                    Urgency: {getSeverityLabel(disaster.severity)}
-                  </Tag>
-                </Space>
+              {/* Body */}
+              <div className={styles.body}>
+                <div className={styles.eventType}>{disaster.event_type}</div>
+                <div className={styles.name}>{disaster.name}</div>
+
+                <div className={styles.severityRow}>
+                  <span className={styles.severityDot} style={{ background: severityColor, boxShadow: `0 0 6px ${severityColor}80` }} />
+                  <Text style={{ color: severityColor, fontSize: 12, fontWeight: 700 }}>
+                    {disaster.severity?.charAt(0).toUpperCase() + disaster.severity?.slice(1)} urgency
+                  </Text>
+                </div>
 
                 <p className={styles.description}>{disaster.description}</p>
 
-                <div className={styles.date}>
-                  Registered: {new Date(disaster.created_at).toLocaleDateString('en-US')}
+                {/* Pool progress */}
+                {disaster.raised != null && disaster.goal != null && (
+                  <div className={styles.progressWrap}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                      <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Pool funded</span>
+                      <span style={{ color: '#2dd4bf', fontWeight: 700 }}>{pct}%</span>
+                    </div>
+                    <div className={styles.progressBar}>
+                      <div className={styles.progressFill} style={{ width: `${pct}%` }} />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                      <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
+                        ${disaster.raised.toLocaleString('en-US')} raised
+                      </span>
+                      <span style={{ color: 'rgba(255,255,255,0.3)' }}>
+                        / ${disaster.goal.toLocaleString('en-US')}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.footer}>
+                  <Text style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, fontWeight: 600 }}>
+                    {new Date(disaster.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </Text>
+                  <div
+                    className={styles.selectBtn}
+                    onClick={e => { e.stopPropagation(); handleSelect(disaster) }}
+                    data-testid={`disaster-select-${disaster.id}`}
+                  >
+                    <ArrowRightOutlined />
+                  </div>
                 </div>
               </div>
-
-              <button
-                className={styles.selectBtn}
-                onClick={e => { e.stopPropagation(); handleSelect(disaster) }}
-                data-testid={`disaster-select-${disaster.id}`}
-              >
-                <ArrowRightOutlined />
-                Select
-              </button>
             </div>
-          </Col>
-        ))}
-      </Row>
+          )
+        })}
+      </div>
     </div>
   )
 }

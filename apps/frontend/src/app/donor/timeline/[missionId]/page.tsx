@@ -38,9 +38,9 @@ function getStatusColor(status: string): string {
 }
 
 const PENDING_EVENTS = [
-  { id: 'p1', title: 'Advance deducted', description: 'The operational advance will be deducted from escrow.' },
-  { id: 'p2', title: 'Margin transferred', description: 'The operational margin will be transferred to the coordinator.' },
-  { id: 'p3', title: 'Operation closed', description: 'The mission will be marked as completed.' },
+  { id: 'p1', title: 'Pool allocation released', description: 'Funds from the campaign pool will be allocated to coordinators with validated deliveries.' },
+  { id: 'p2', title: 'Coordinator payout settled', description: 'Validated coordinators receive their share of the pool after deducting operational advances.' },
+  { id: 'p3', title: 'Campaign closed', description: 'The campaign pool will be marked as completed once all deliveries are settled.' },
 ]
 
 export default function TimelinePage() {
@@ -108,17 +108,17 @@ export default function TimelinePage() {
         Back to disasters
       </Button>
 
-      {/* Mission summary */}
+      {/* Campaign Pool summary */}
       <Card style={{ marginBottom: '24px', background: '#f6ffed', border: '1px solid #b7eb8f' }}>
         <Space direction="vertical" size={4}>
-          <Text strong style={{ fontSize: '16px' }}>Active mission</Text>
-          <Text type="secondary">LogiHumanitas / Valparaiso Earthquake</Text>
+          <Text strong style={{ fontSize: '16px' }}>Active Campaign Pool</Text>
+          <Text type="secondary">Valparaíso Earthquake — Campaign Pool</Text>
           <Tag color="green">In execution</Tag>
         </Space>
       </Card>
 
       <Card
-        title="Event history"
+        title="Campaign pool timeline"
         extra={
           <Button
             icon={<ReloadOutlined />}

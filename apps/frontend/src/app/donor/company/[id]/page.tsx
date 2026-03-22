@@ -160,7 +160,7 @@ const useStyles = createStyles(({ css }) => ({
     textTransform: 'uppercase',
     marginBottom: 8,
   }),
-  continueBtn: css({
+  contributeBtn: css({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -181,6 +181,28 @@ const useStyles = createStyles(({ css }) => ({
       filter: 'brightness(1.1)',
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 24px rgba(45,212,191,0.35)',
+    },
+  }),
+  backToPoolBtn: css({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    width: '100%',
+    maxWidth: 400,
+    margin: '12px auto 0',
+    height: 44,
+    borderRadius: 14,
+    fontWeight: 600,
+    fontSize: 14,
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    color: 'rgba(255,255,255,0.7)',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      background: 'rgba(255,255,255,0.1)',
+      color: '#fff',
     },
   }),
   fadeIn: css({
@@ -240,9 +262,7 @@ export default function CompanyProfilePage() {
     load()
   }, [companyId])
 
-  function handleContinue() {
-    if (!company) return
-    localStorage.setItem('selectedCompany', JSON.stringify(company))
+  function handleContributeToPool() {
     router.push('/donor/fund')
   }
 
@@ -265,7 +285,7 @@ export default function CompanyProfilePage() {
         <span>/</span>
         <a href="/donor/disasters">Disasters</a>
         <span>/</span>
-        <a href={`/donor/companies?disaster_id=${disasterId}`}>Companies</a>
+        <a href={`/donor/companies?disaster_id=${disasterId}`}>Campaign Pool</a>
         <span>/</span>
         <span>{company.name}</span>
       </div>
@@ -416,10 +436,26 @@ export default function CompanyProfilePage() {
         </div>
       )}
 
-      {/* Continue CTA */}
-      <div style={{ padding: '24px 0', textAlign: 'center' }}>
-        <button className={styles.continueBtn} onClick={handleContinue}>
-          Continue with this company
+      {/* Capacity reference notice */}
+      <div style={{
+        padding: '16px 20px',
+        background: 'rgba(56,189,248,0.06)',
+        border: '1px solid rgba(56,189,248,0.15)',
+        borderRadius: 14,
+        marginBottom: 24,
+      }}>
+        <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
+          This coordinator is a registered capacity provider. Pool funds are allocated to them by the protocol only after validated last-mile delivery evidence is submitted — not as a direct donation target.
+        </Text>
+      </div>
+
+      {/* Pool contribution CTA */}
+      <div style={{ padding: '0 0 32px', textAlign: 'center' }}>
+        <button className={styles.contributeBtn} onClick={handleContributeToPool} data-testid="contribute-pool-from-coordinator">
+          Contribute to Campaign Pool
+        </button>
+        <button className={styles.backToPoolBtn} onClick={() => router.back()}>
+          Back to Campaign Pool
         </button>
       </div>
     </div>

@@ -65,8 +65,8 @@ It enables operators to:
 \- work in the field with offline tolerance,  
 \- sync later without losing operational evidence.
 
-\#\# MVP promise  
-A donor selects an active disaster operation, chooses a logistics company, deposits funds into escrow, and then tracks the mission. A field operator records delivery evidence with QR \+ GPS \+ timestamp. After validation, settlement is executed and the system explains the financial outcome in simple product language.
+\#\# MVP promise
+A donor selects an active disaster, reviews the Campaign Pool status, and deposits funds into the pool escrow. The pool allocates to logistics coordinators only after they submit validated delivery evidence. A field operator records delivery evidence with QR \+ GPS \+ timestamp. After validation, settlement is executed and the system explains the financial outcome in simple product language.
 
 \#\# Core differentiator  
 This is not “donation tracking” only.  
@@ -326,21 +326,20 @@ Implement the main MVP vertical slice:
 \- Validation layer  
 \- Escrow contract
 
-\#\# Preconditions  
-\- At least one disaster is published  
-\- At least one logistics company exists for that disaster  
-\- Company profile includes plan and trust summary  
-\- Donor has access to a wallet  
-\- Operator account exists and is assigned to a mission
+\#\# Preconditions
+\- At least one disaster is published with an active Campaign Pool
+\- At least one logistics company is registered as a capacity provider for that disaster (visible as reference, not as a required selection step)
+\- Donor has access to a wallet
+\- Operator account exists and is assigned to a coordinator mission
 
-\#\# User story 1  
-As a donor, I want to select a disaster and review logistics companies so I can make an informed funding decision.
+\#\# User story 1
+As a donor, I want to select a disaster and contribute to its Campaign Pool so I know my funds are available for the emergency, with coordinators visible as optional reference.
 
-\#\#\# Acceptance criteria  
-1\. Given a donor opens the system, when active disasters are displayed, then the donor can select one disaster context.  
-2\. Given a disaster is selected, when logistics companies are displayed, then the donor can compare and open a company profile.  
-3\. Given a company profile is shown, when the donor reviews it, then the UI must expose capacity, trust, risks, operational plan, and AI-generated analysis summary.  
-4\. Given the donor chooses a company, when they continue, then the selected disaster and company remain visible in the next funding step.
+\#\#\# Acceptance criteria
+1\. Given a donor opens the system, when active disasters are displayed, then the donor can select one disaster context.
+2\. Given a disaster is selected, when the campaign view opens, then the UI must prioritise the Campaign Pool status (total funds, goal, urgency) above any company list.
+3\. Given a company profile is shown, when the donor reviews it, then the UI must expose capacity, trust, risks, operational plan, and AI-generated analysis summary — but must NOT include a "Donate to this company" CTA.
+4\. Given the donor confirms a contribution, when the transaction succeeds, then the commitment is bound to the Disaster Pool (Disaster ID), not to a single logistics company.
 
 \#\# User story 2  
 As a donor, I want to commit funds with clear feedback so I know my contribution was registered successfully.
@@ -383,7 +382,7 @@ As a donor, I want to view the mission timeline so I can understand what happene
 4\. Settlement-related events must use product language, not only contract language.
 
 \#\# Business rules  
-\- A funding commitment must always be associated with one disaster and one logistics company.  
+\- A funding commitment is associated with a Disaster Pool. The allocation to specific logistics companies is handled by the protocol based on validated delivery events.
 \- A delivery event cannot be settled before evidence validation completes.  
 \- Validation decisions may be accepted, requires\_review, or rejected.  
 \- Settlement explanation must distinguish operational advance deduction from final transfer.

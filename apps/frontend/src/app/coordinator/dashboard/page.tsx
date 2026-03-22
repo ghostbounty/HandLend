@@ -9,7 +9,7 @@ import {
   DollarOutlined, TruckOutlined, SyncOutlined,
   ReloadOutlined, CheckCircleOutlined, WarningOutlined,
   TeamOutlined, ArrowRightOutlined, BarChartOutlined,
-  SettingOutlined,
+  SettingOutlined, FileSearchOutlined,
 } from '@ant-design/icons'
 import Link from 'next/link'
 import { createStyles } from 'antd-style'
@@ -320,6 +320,18 @@ export default function DashboardPage() {
             <div style={{ flex: 1 }}>
               <Text strong style={{ display: 'block', lineHeight: 1.3 }}>Mission planning</Text>
               <Text type="secondary" style={{ fontSize: 12 }}>Create and review missions</Text>
+            </div>
+            <ArrowRightOutlined style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }} />
+          </div>
+        </Link>
+        <Link href="/coordinator/evidence" style={{ textDecoration: 'none' }}>
+          <div className={styles.quickCard}>
+            <div className={styles.iconBubble} style={{ background: 'rgba(167,139,250,0.12)', color: '#a78bfa' }}>
+              <FileSearchOutlined />
+            </div>
+            <div style={{ flex: 1 }}>
+              <Text strong style={{ display: 'block', lineHeight: 1.3 }}>Evidence Review</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>Review operator submissions</Text>
             </div>
             <ArrowRightOutlined style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14 }} />
           </div>

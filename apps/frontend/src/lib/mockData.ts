@@ -4,17 +4,51 @@ export const DISASTERS = [
   {
     id: 1, name: 'Valparaíso Earthquake', country: 'Chile', event_type: 'Earthquake',
     severity: 'critical', status: 'active', created_at: '2026-03-15T08:00:00Z',
+    image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&q=80',
+    raised: 78000, goal: 100000,
     description: 'Magnitude 7.2 earthquake affects the Valparaíso region. More than 40,000 people left homeless. Urgent assistance required for food, water, and temporary shelter.'
   },
   {
     id: 2, name: 'Piura Floods', country: 'Peru', event_type: 'Flood',
     severity: 'high', status: 'active', created_at: '2026-03-10T12:00:00Z',
+    image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600&q=80',
+    raised: 27000, goal: 50000,
     description: 'Torrential rains cause the Piura river to overflow. 15,000 families evacuated. Access infrastructure damaged in multiple areas.'
   },
   {
     id: 3, name: 'Gran Chaco Drought', country: 'Paraguay', event_type: 'Drought',
     severity: 'medium', status: 'active', created_at: '2026-02-28T09:00:00Z',
+    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80',
+    raised: 9300, goal: 30000,
     description: 'Prolonged drought in the Chaco region impacts indigenous communities. Critical shortage of drinking water and loss of subsistence crops.'
+  },
+  {
+    id: 4, name: 'Caribbean Coast Flooding', country: 'Colombia', event_type: 'Flood',
+    severity: 'critical', status: 'active', created_at: '2026-03-18T07:30:00Z',
+    image: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=600&q=80',
+    raised: 15000, goal: 75000,
+    description: 'Severe flooding on the Caribbean coast leaves over 60,000 people displaced. Roads, bridges, and health centers collapsed. Emergency food and clean water supplies are critically needed.'
+  },
+  {
+    id: 5, name: 'Amazon Wildfire Emergency', country: 'Bolivia', event_type: 'Wildfire',
+    severity: 'high', status: 'active', created_at: '2026-03-12T14:00:00Z',
+    image: 'https://images.unsplash.com/photo-1562184647-3eba5b6ada6f?w=600&q=80',
+    raised: 42000, goal: 80000,
+    description: 'Out-of-control wildfires have consumed over 500,000 hectares in the Bolivian Amazon. Indigenous communities cut off from supply routes. Respiratory health emergency declared in three departments.'
+  },
+  {
+    id: 6, name: 'Hurricane Marta', country: 'Honduras', event_type: 'Hurricane',
+    severity: 'critical', status: 'active', created_at: '2026-03-20T03:00:00Z',
+    image: 'https://images.unsplash.com/photo-1527482937786-6608f6e14c15?w=600&q=80',
+    raised: 61000, goal: 120000,
+    description: 'Category 4 hurricane makes landfall on the north coast of Honduras. Entire communities swept away by storm surges. Over 80,000 people evacuated, dozens missing. Power grid destroyed.'
+  },
+  {
+    id: 7, name: 'Tungurahua Volcanic Activity', country: 'Ecuador', event_type: 'Volcanic',
+    severity: 'medium', status: 'active', created_at: '2026-03-08T11:00:00Z',
+    image: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?w=600&q=80',
+    raised: 8500, goal: 40000,
+    description: 'Renewed eruptive activity at Tungurahua forces evacuation of 12,000 residents. Ashfall contaminates water sources and destroys crops across the surrounding provinces.'
   },
 ]
 
@@ -191,6 +225,7 @@ export const MOCK_COORDINATOR_USERS = [
     name: 'Roberto Fernández',
     email: 'rfernandez@logihumanitas.cl',
     password: 'coord2026',
+    role: 'coordinator' as const,
     organization: 'LogiHumanitas SpA',
   },
   {
@@ -198,6 +233,26 @@ export const MOCK_COORDINATOR_USERS = [
     name: 'María López',
     email: 'mlopez@cargosolidario.cl',
     password: 'coord2026',
+    role: 'coordinator' as const,
     organization: 'CargoSolidario',
+  },
+]
+
+export const MOCK_DONOR_USERS = [
+  {
+    id: 201,
+    name: 'Elena Vargas',
+    email: 'elena@donor.com',
+    password: 'donor2026',
+    role: 'donor' as const,
+    organization: '',
+  },
+  {
+    id: 202,
+    name: 'Marco Ruiz',
+    email: 'marco@donor.com',
+    password: 'donor2026',
+    role: 'donor' as const,
+    organization: '',
   },
 ]

@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Typography, InputNumber, Button, Alert, Tag, Row, Col, Spin,
+  Typography, InputNumber, Button, Alert, Tag, Spin,
 } from 'antd'
 import {
   WalletOutlined, CheckCircleOutlined, LoadingOutlined,
@@ -18,8 +18,6 @@ type TxState = 'idle' | 'pending_signature' | 'sending' | 'confirmed'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Disaster = any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Company = any
 
 const WALLET_ADDRESS = '0xDemo1234...abcd5678'
 const WALLET_BALANCE = 1250
@@ -151,16 +149,13 @@ function FundContent() {
   const router = useRouter()
 
   const [disaster, setDisaster] = useState<Disaster | null>(null)
-  const [company, setCompany] = useState<Company | null>(null)
   const [amount, setAmount] = useState<number>(100)
   const [txState, setTxState] = useState<TxState>('idle')
 
   useEffect(() => {
     try {
       const d = localStorage.getItem('selectedDisaster')
-      const c = localStorage.getItem('selectedCompany')
       if (d) setDisaster(JSON.parse(d))
-      if (c) setCompany(JSON.parse(c))
     } catch {}
   }, [])
 
@@ -174,7 +169,6 @@ function FundContent() {
 
     const intent = await postContributionIntent({
       disaster_id: disaster?.id || 1,
-      company_id: company?.id || 1,
       amount,
       wallet_address: WALLET_ADDRESS,
     })
@@ -212,11 +206,11 @@ function FundContent() {
       <Title level={2}>Confirm contribution</Title>
 
       {/* Context summary */}
-      {(!disaster || !company) ? (
+      {!disaster ? (
         <Alert
           type="warning"
           message="Missing context"
-          description="Please select a disaster and a logistics company before funding."
+          description="Please select a disaster before funding."
           showIcon
           style={{ marginBottom: '24px', borderRadius: 14 }}
           action={
@@ -227,48 +221,35 @@ function FundContent() {
         />
       ) : (
         <div className={styles.card}>
-          <Row gutter={[16, 12]}>
-            <Col xs={24} sm={12}>
-              <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 6 }}>
-                Selected emergency
-              </Text>
-              <div>
-                <Text strong style={{ fontSize: 16, color: '#fff' }}>
-                  {disaster.name}
-                </Text>
-                <Tag style={{
-                  marginLeft: 8,
-                  background: 'rgba(45,212,191,0.12)',
-                  border: '1px solid rgba(45,212,191,0.3)',
-                  color: '#2dd4bf',
-                  borderRadius: 24,
-                  fontWeight: 700,
-                }}>
-                  {disaster.country}
-                </Tag>
-              </div>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 6 }}>
-                Logistics company
-              </Text>
-              <div>
-                <Text strong style={{ fontSize: 16, color: '#fff' }}>
-                  {company.name}
-                </Text>
-                <Tag style={{
-                  marginLeft: 8,
-                  background: 'rgba(74,222,128,0.12)',
-                  border: '1px solid rgba(74,222,128,0.3)',
-                  color: '#4ade80',
-                  borderRadius: 24,
-                  fontWeight: 700,
-                }}>
-                  {company.trust_score}/100
-                </Tag>
-              </div>
-            </Col>
-          </Row>
+          <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' as const, display: 'block', marginBottom: 6 }}>
+            Contributing to Campaign Pool
+          </Text>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <Text strong style={{ fontSize: 18, color: '#fff' }}>
+              {disaster.name}
+            </Text>
+            <Tag style={{
+              background: 'rgba(45,212,191,0.12)',
+              border: '1px solid rgba(45,212,191,0.3)',
+              color: '#2dd4bf',
+              borderRadius: 24,
+              fontWeight: 700,
+            }}>
+              {disaster.country}
+            </Tag>
+            <Tag style={{
+              background: 'rgba(45,212,191,0.08)',
+              border: '1px solid rgba(45,212,191,0.2)',
+              color: '#2dd4bf',
+              borderRadius: 24,
+              fontWeight: 700,
+            }}>
+              Campaign Pool
+            </Tag>
+          </div>
+          <Text style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 8, display: 'block' }}>
+            Your contribution will be acredited to the disaster campaign pool. Allocation to coordinators happens via the protocol as validated deliveries are completed.
+          </Text>
         </div>
       )}
 
@@ -349,8 +330,10 @@ function FundContent() {
           <div className={styles.stateAlert} style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.2)' }}>
             <CheckCircleOutlined style={{ color: '#4ade80', fontSize: 18, marginTop: 2 }} />
             <div>
-              <Text strong style={{ color: '#4ade80', display: 'block' }}>Contribution confirmed! Funds locked in escrow.</Text>
-              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>Redirecting to mission tracking...</Text>
+              <Text strong style={{ color: '#4ade80', display: 'block' }}>
+                Funds acredited to the {disaster?.name || 'Campaign'} Pool!
+              </Text>
+              <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>Redirecting to campaign timeline...</Text>
             </div>
           </div>
         )}
@@ -378,7 +361,7 @@ function FundContent() {
         <div className={styles.infoBar}>
           <SafetyOutlined style={{ color: '#38bdf8', fontSize: 16 }} />
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
-            Your contribution is recorded transparently. You will be able to view the full mission tracking.
+            Your contribution is acredited to the Campaign Pool and locked in escrow on Avalanche. You can track how the pool is distributed as coordinators submit validated delivery evidence.
           </Text>
         </div>
       </div>

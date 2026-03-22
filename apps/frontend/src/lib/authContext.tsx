@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { MOCK_COORDINATOR_USERS } from './mockData'
+import { MOCK_COORDINATOR_USERS, MOCK_DONOR_USERS } from './mockData'
 
 /* ─── Types ─── */
 
@@ -17,13 +17,14 @@ export interface AuthUser {
   name: string
   email: string
   organization: string
+  role: 'donor' | 'coordinator'
 }
 
 interface AuthContextValue {
   user: AuthUser | null
   isAuthenticated: boolean
   login: (email: string, password: string) => { ok: boolean; error?: string }
-  register: (name: string, email: string, password: string) => { ok: boolean; error?: string }
+  register: (name: string, email: string, password: string, role?: 'donor' | 'coordinator') => { ok: boolean; error?: string }
   logout: () => void
 }
 
@@ -37,7 +38,10 @@ interface StoredUser extends AuthUser {
   password: string
 }
 
-let userRegistry: StoredUser[] = MOCK_COORDINATOR_USERS.map((u) => ({ ...u }))
+let userRegistry: StoredUser[] = [
+  ...MOCK_COORDINATOR_USERS.map((u) => ({ ...u, role: 'coordinator' as const })),
+  ...MOCK_DONOR_USERS.map((u) => ({ ...u, role: 'donor' as const })),
+]
 
 /* ─── Provider ─── */
 
@@ -84,6 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: string,
       email: string,
       password: string,
+      role: 'donor' | 'coordinator' = 'donor',
     ): { ok: boolean; error?: string } => {
       if (userRegistry.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
         return { ok: false, error: 'An account with this email already exists' }
@@ -93,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name,
         email,
         organization: '',
+        role,
         password,
       }
       userRegistry = [...userRegistry, newUser]

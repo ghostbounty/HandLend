@@ -1,38 +1,37 @@
 'use client'
 
-import { useState } from 'react'
-import { Layout, Button, Space, Typography, Badge, Avatar, Tooltip, Switch } from 'antd'
+import { useRouter, usePathname } from 'next/navigation'
+import { Typography, Button } from 'antd'
 import {
   HeartOutlined, ToolOutlined, TeamOutlined, HomeOutlined,
-  WalletOutlined, BellOutlined, MenuOutlined, CloseOutlined,
-  SearchOutlined, ThunderboltOutlined, BarChartOutlined,
-  LogoutOutlined,
+  UserOutlined, LogoutOutlined, RocketOutlined,
 } from '@ant-design/icons'
-import { usePathname, useRouter } from 'next/navigation'
 import { createStyles } from 'antd-style'
 import clsx from 'clsx'
 import { useAuth } from '@/lib/authContext'
 
-const { Sider, Content, Header } = Layout
 const { Text } = Typography
 
-const useStyles = createStyles(({ css, token }) => ({
+const useStyles = createStyles(({ css }) => ({
   sider: css({
-    background: 'rgba(15,23,42,0.7) !important',
+    background: 'rgba(15,23,42,0.7)',
     backdropFilter: 'blur(20px)',
     borderRight: '1px solid rgba(255,255,255,0.08)',
-    position: 'fixed !important' as 'fixed',
+    position: 'fixed',
     height: '100vh',
     left: 0,
     top: 0,
+    width: 260,
     zIndex: 200,
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden',
   }),
   logo: css({
     padding: '24px 20px 20px',
     borderBottom: '1px solid rgba(255,255,255,0.06)',
     marginBottom: 8,
+    cursor: 'pointer',
   }),
   navItem: css({
     display: 'flex',
@@ -71,51 +70,6 @@ const useStyles = createStyles(({ css, token }) => ({
     flexDirection: 'column',
     gap: 8,
   }),
-  topHeader: css({
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-    background: 'rgba(15,23,42,0.8) !important',
-    backdropFilter: 'blur(16px)',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
-    padding: '0 24px',
-    height: 64,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  }),
-  searchBar: css({
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: 24,
-    padding: '8px 16px',
-    flex: 1,
-    maxWidth: 360,
-    cursor: 'text',
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 14,
-  }),
-  iconBtn: css({
-    width: 36,
-    height: 36,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: 'rgba(255,255,255,0.6)',
-    cursor: 'pointer',
-    transition: 'all 0.15s',
-    fontSize: 16,
-    '&:hover': {
-      background: 'rgba(255,255,255,0.12)',
-      color: '#fff',
-    },
-  }),
   mobileNav: css({
     position: 'fixed',
     bottom: 0,
@@ -152,9 +106,10 @@ const useStyles = createStyles(({ css, token }) => ({
 
 const NAV_ALL = [
   { label: 'Discover', icon: <HomeOutlined />, path: '/', match: '/', roles: null },
-  { label: 'Donor', icon: <HeartOutlined />, path: '/donor/disasters', match: '/donor', roles: ['donor'] },
+  { label: 'Donate', icon: <HeartOutlined />, path: '/donor/disasters', match: '/donor', roles: null },
   { label: 'Operator', icon: <ToolOutlined />, path: '/operator/delivery', match: '/operator', roles: null },
   { label: 'Coordinator', icon: <TeamOutlined />, path: '/coordinator/dashboard', match: '/coordinator', roles: ['coordinator'] },
+  { label: 'Account', icon: <UserOutlined />, path: '/account', match: '/account', roles: null },
 ]
 
 export default function GlassShell({ children }: { children: React.ReactNode }) {
@@ -171,41 +126,23 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
     match === '/' ? pathname === '/' : pathname.startsWith(match)
 
   const handleLogout = () => {
-    const role = user?.role
     logout()
-    router.push(role === 'coordinator' ? '/coordinator/login' : '/donor/login')
-  }
-
-  const avatarTooltip = isAuthenticated
-    ? `${user?.name} (${user?.role}) — Click to log out`
-    : 'Not logged in — Click to log in'
-
-  const handleAvatarClick = () => {
-    if (isAuthenticated) {
-      handleLogout()
-    } else {
-      router.push('/donor/login')
-    }
+    router.push('/login')
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent' }}>
       {/* ── Desktop Sidebar ── */}
-      <div className="desktop-sidebar" style={{ display: 'none' }} id="desktop-sidebar">
-        <div className={styles.sider} style={{ width: 260, overflow: 'hidden' }}>
+      <div id="desktop-sidebar" style={{ display: 'none' }}>
+        <div className={styles.sider}>
           {/* Logo */}
-          <div className={styles.logo}>
-            <div
-              onClick={() => router.push('/')}
-              style={{ cursor: 'pointer' }}
-            >
-              <Text strong style={{ color: '#2dd4bf', fontSize: 20, letterSpacing: '-0.5px', display: 'block' }}>
-                Hand<span style={{ color: '#fff' }}>Lend</span>
-              </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Humanitarian Protocol
-              </Text>
-            </div>
+          <div className={styles.logo} onClick={() => router.push('/')}>
+            <Text strong style={{ color: '#2dd4bf', fontSize: 20, letterSpacing: '-0.5px', display: 'block' }}>
+              Hand<span style={{ color: '#fff' }}>Lend</span>
+            </Text>
+            <Text style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Humanitarian Protocol
+            </Text>
           </div>
 
           {/* Nav */}
@@ -225,18 +162,16 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
 
           {/* Bottom CTAs */}
           <div className={styles.siderBottom}>
-            {(user?.role === 'donor' || !isAuthenticated) && (
-              <Button
-                type="primary"
-                block
-                size="large"
-                style={{ borderRadius: 24, fontWeight: 700, background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
-                onClick={() => router.push('/donor/disasters')}
-                data-testid="btn-fund-campaign"
-              >
-                Fund Campaign
-              </Button>
-            )}
+            <Button
+              type="primary"
+              block
+              size="large"
+              style={{ borderRadius: 24, fontWeight: 700, background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
+              onClick={() => router.push('/donor/disasters')}
+              data-testid="btn-fund-campaign"
+            >
+              Fund Campaign
+            </Button>
             <Button
               block
               size="middle"
@@ -247,7 +182,19 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
             >
               Register Delivery
             </Button>
-            {isAuthenticated && (
+            {isAuthenticated && user?.role !== 'coordinator' && (
+              <Button
+                block
+                size="middle"
+                icon={<RocketOutlined />}
+                style={{ borderRadius: 24, fontWeight: 600, background: 'rgba(45,212,191,0.08)', color: '#2dd4bf', border: '1px solid rgba(45,212,191,0.25)' }}
+                onClick={() => router.push('/coordinator/apply')}
+                data-testid="btn-become-coordinator"
+              >
+                Become a Coordinator
+              </Button>
+            )}
+            {isAuthenticated ? (
               <Button
                 block
                 size="middle"
@@ -259,47 +206,26 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
               >
                 Log Out
               </Button>
+            ) : (
+              <Button
+                block
+                size="middle"
+                icon={<UserOutlined />}
+                style={{ borderRadius: 24, fontWeight: 600, background: 'transparent', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.12)' }}
+                onClick={() => router.push('/login')}
+                data-testid="btn-login"
+              >
+                Log In
+              </Button>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Main area ── */}
-      <Layout style={{ background: 'transparent', marginLeft: 0 }} id="main-layout">
-        {/* Top Header */}
-        <Header className={styles.topHeader}>
-          <div className={styles.searchBar}>
-            <SearchOutlined />
-            <span style={{ lineHeight: '10px' }}>Search humanitarian initiatives...</span>
-          </div>
-          <Space size={8} style={{ marginLeft: 16 }}>
-            <Tooltip title="Notifications">
-              <Badge dot>
-                <div className={styles.iconBtn}><BellOutlined /></div>
-              </Badge>
-            </Tooltip>
-            <Tooltip title="Wallet: 0xDemo...abcd">
-              <div className={styles.iconBtn}><WalletOutlined /></div>
-            </Tooltip>
-            <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
-            <Tooltip title={avatarTooltip}>
-              <Avatar
-                style={{ background: '#2dd4bf', color: '#0f172a', fontWeight: 700, cursor: 'pointer' }}
-                size={36}
-                onClick={handleAvatarClick}
-                data-testid="header-avatar"
-              >
-                {isAuthenticated ? (user?.name?.[0] ?? 'U') : 'G'}
-              </Avatar>
-            </Tooltip>
-          </Space>
-        </Header>
-
-        {/* Content */}
-        <Content style={{ background: 'transparent', overflowY: 'auto' }}>
-          {children}
-        </Content>
-      </Layout>
+      {/* ── Main Content ── */}
+      <div id="main-layout" style={{ background: 'transparent', marginLeft: 0, minHeight: '100vh' }}>
+        {children}
+      </div>
 
       {/* ── Mobile Bottom Nav ── */}
       <nav className={styles.mobileNav} id="mobile-nav">
@@ -327,6 +253,6 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
           #main-layout { padding-bottom: 80px; }
         }
       `}</style>
-    </Layout>
+    </div>
   )
 }

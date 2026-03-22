@@ -17,14 +17,15 @@ export interface AuthUser {
   name: string
   email: string
   organization: string
-  role: 'donor' | 'coordinator'
+  role: 'member' | 'donor' | 'coordinator'
 }
 
 interface AuthContextValue {
   user: AuthUser | null
   isAuthenticated: boolean
   login: (email: string, password: string) => { ok: boolean; error?: string }
-  register: (name: string, email: string, password: string, role?: 'donor' | 'coordinator') => { ok: boolean; error?: string }
+  register: (name: string, email: string, password: string) => { ok: boolean; error?: string }
+  becomeCoordinator: (organization: string, description: string) => { ok: boolean; error?: string }
   logout: () => void
 }
 
@@ -88,7 +89,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: string,
       email: string,
       password: string,
-      role: 'donor' | 'coordinator' = 'donor',
     ): { ok: boolean; error?: string } => {
       if (userRegistry.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
         return { ok: false, error: 'An account with this email already exists' }
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name,
         email,
         organization: '',
-        role,
+        role: 'member',
         password,
       }
       userRegistry = [...userRegistry, newUser]
@@ -109,11 +109,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [persist],
   )
 
+  const becomeCoordinator = useCallback(
+    (organization: string, description: string): { ok: boolean; error?: string } => {
+      if (!user) return { ok: false, error: 'You must be logged in' }
+      const updated: AuthUser = { ...user, role: 'coordinator', organization }
+      userRegistry = userRegistry.map((u) =>
+        u.email.toLowerCase() === user.email.toLowerCase()
+          ? { ...u, role: 'coordinator', organization }
+          : u,
+      )
+      persist(updated)
+      return { ok: true }
+    },
+    [user, persist],
+  )
+
   const logout = useCallback(() => persist(null), [persist])
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isAuthenticated: !!user, login, register, logout }),
-    [user, login, register, logout],
+    () => ({ user, isAuthenticated: !!user, login, register, becomeCoordinator, logout }),
+    [user, login, register, becomeCoordinator, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

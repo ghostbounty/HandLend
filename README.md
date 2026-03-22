@@ -1,5 +1,50 @@
 # HandLend
 
+
+## Deployment
+
+### Backend (FastAPI + SQLite)
+
+1. Navigate to the backend directory:
+   ```bash
+   cd apps/backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Start the server (runs on `http://localhost:8000`):
+   ```bash
+   uvicorn main:app --reload --port 8000
+   ```
+*(Note: The `handlend.db` SQLite database is automatically created and seeded with demo data on the first run.)*
+
+### Frontend (Next.js)
+
+1. In a new terminal, navigate to the frontend directory:
+   ```bash
+   cd apps/frontend
+   ```
+2. Install Node.js dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the development server (runs on `http://localhost:3000`):
+   ```bash
+   pnpm run dev
+   ```
+4. For production deployment, build and then start the server:
+   ```bash
+   pnpm run build
+   pnpm run start
+   ```
+
+
 HandLend is a humanitarian funding platform where donor money is not released blindly. Funds are committed to a mission, locked in escrow on Avalanche, validated through operational evidence, and surfaced to users through product-readable timelines instead of raw blockchain jargon.
 
 This repository uses Spec-Driven Development as the operating model for HandLend itself. The three source documents for the repo are:

@@ -10,22 +10,20 @@ export default function CoordinatorLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
 
-  const isLoginPage = pathname === '/coordinator/login'
+  const isPublicPage = pathname === '/coordinator/apply'
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoginPage) {
-      router.replace('/coordinator/login')
+    if (!isPublicPage && !isAuthenticated) {
+      router.replace('/login')
     }
-  }, [isAuthenticated, isLoginPage, router])
+  }, [isAuthenticated, isPublicPage, router])
 
-  // On the login page, always render children (login form)
-  if (isLoginPage) return <>{children}</>
+  if (isPublicPage) return <>{children}</>
 
-  // While waiting for redirect
   if (!isAuthenticated) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>

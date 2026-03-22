@@ -1,123 +1,278 @@
 'use client'
 
-import { Card, Typography, Space } from 'antd'
-import { HeartOutlined, TeamOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import { useState } from 'react'
+import {
+  Card, Tabs, Form, Input, Button, Typography, Space, Alert, Divider,
+} from 'antd'
+import {
+  UserOutlined, LockOutlined, MailOutlined, ThunderboltOutlined,
+} from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import { createStyles } from 'antd-style'
+import { useAuth } from '@/lib/authContext'
 
-const { Title, Text } = Typography
+const { Title, Text, Paragraph } = Typography
 
 const useStyles = createStyles(({ css }) => ({
   wrapper: css({
-    minHeight: 'calc(100vh - 64px)',
+    minHeight: '100vh',
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px 16px',
-    gap: 32,
   }),
-  heading: css({
-    textAlign: 'center',
-  }),
-  cardsRow: css({
-    display: 'flex',
-    gap: 24,
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  }),
-  roleCard: css({
-    width: 220,
-    background: 'rgba(15,23,42,0.55) !important',
-    backdropFilter: 'blur(12px)',
+  card: css({
+    width: '100%',
+    maxWidth: 440,
+    background: 'rgba(15,23,42,0.7) !important',
+    backdropFilter: 'blur(20px)',
     border: '1px solid rgba(255,255,255,0.1) !important',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
     borderRadius: '16px !important',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      border: '1px solid rgba(45,212,191,0.4) !important',
-      boxShadow: '0 12px 40px rgba(45,212,191,0.15)',
-      transform: 'translateY(-4px)',
-    },
   }),
-  roleCardInner: css({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 12,
-    padding: '8px 0',
+  logo: css({
+    textAlign: 'center',
+    marginBottom: 8,
   }),
-  arrowRow: css({
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 13,
-    marginTop: 4,
+  submitBtn: css({
+    height: 44,
+    borderRadius: 12,
+    fontWeight: 700,
+    fontSize: 15,
+  }),
+  footer: css({
+    textAlign: 'center',
+    marginTop: 16,
   }),
 }))
 
-export default function LoginLandingPage() {
+export default function LoginPage() {
   const { styles } = useStyles()
   const router = useRouter()
+  const { login, register } = useAuth()
+  const [activeTab, setActiveTab] = useState('login')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleLogin = async (values: { email: string; password: string }) => {
+    setError(null)
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 400))
+    const result = login(values.email, values.password)
+    setLoading(false)
+    if (result.ok) {
+      // Redirect based on role stored after login
+      const raw = localStorage.getItem('handlend_auth')
+      const user = raw ? JSON.parse(raw) : null
+      if (user?.role === 'coordinator') {
+        router.push('/coordinator/dashboard')
+      } else {
+        router.push('/')
+      }
+    } else {
+      setError(result.error || 'Login failed')
+    }
+  }
+
+  const handleRegister = async (values: {
+    name: string
+    email: string
+    password: string
+  }) => {
+    setError(null)
+    setLoading(true)
+    await new Promise((r) => setTimeout(r, 400))
+    const result = register(values.name, values.email, values.password)
+    setLoading(false)
+    if (result.ok) {
+      router.push('/')
+    } else {
+      setError(result.error || 'Registration failed')
+    }
+  }
 
   return (
-    <div className={styles.wrapper} data-testid="login-landing-page">
-      <div className={styles.heading}>
-        <Title level={2} style={{ margin: 0, color: '#f1f5f9' }}>
-          Welcome to <span style={{ color: '#2dd4bf' }}>HandLend</span>
-        </Title>
-        <Text type="secondary" style={{ fontSize: 15, marginTop: 8, display: 'block' }}>
-          Choose your role to continue
-        </Text>
-      </div>
-
-      <div className={styles.cardsRow}>
-        {/* Donor card */}
-        <Card
-          className={styles.roleCard}
-          bordered={false}
-          onClick={() => router.push('/donor/login')}
-          data-testid="role-card-donor"
-        >
-          <div className={styles.roleCardInner}>
-            <HeartOutlined style={{ fontSize: 48, color: '#2dd4bf' }} />
-            <Title level={4} style={{ margin: 0, color: '#f1f5f9' }}>
-              I&apos;m a Donor
+    <div className={styles.wrapper} data-testid="login-page">
+      <Card className={styles.card} bordered={false}>
+        <div className={styles.logo}>
+          <Space direction="vertical" size={4}>
+            <ThunderboltOutlined style={{ fontSize: 40, color: '#2dd4bf' }} />
+            <Title level={3} style={{ margin: 0, color: '#f1f5f9' }}>
+              Hand<span style={{ color: '#2dd4bf' }}>Lend</span>
             </Title>
-            <Text type="secondary" style={{ fontSize: 13, textAlign: 'center' }}>
-              Fund humanitarian campaigns and track delivery impact
+            <Text type="secondary" style={{ fontSize: 13 }}>
+              Humanitarian Protocol
             </Text>
-            <div className={styles.arrowRow}>
-              <span>Go to Donor login</span>
-              <ArrowRightOutlined />
-            </div>
-          </div>
-        </Card>
+          </Space>
+        </div>
 
-        {/* Coordinator card */}
-        <Card
-          className={styles.roleCard}
-          bordered={false}
-          onClick={() => router.push('/coordinator/login')}
-          data-testid="role-card-coordinator"
-        >
-          <div className={styles.roleCardInner}>
-            <TeamOutlined style={{ fontSize: 48, color: '#2dd4bf' }} />
-            <Title level={4} style={{ margin: 0, color: '#f1f5f9' }}>
-              I&apos;m a Coordinator
-            </Title>
-            <Text type="secondary" style={{ fontSize: 13, textAlign: 'center' }}>
-              Manage logistics operations and submit delivery evidence
-            </Text>
-            <div className={styles.arrowRow}>
-              <span>Go to Coordinator login</span>
-              <ArrowRightOutlined />
-            </div>
-          </div>
-        </Card>
-      </div>
+        <Divider style={{ borderColor: 'rgba(255,255,255,0.08)', margin: '16px 0' }} />
+
+        {error && (
+          <Alert
+            type="error"
+            message={error}
+            showIcon
+            closable
+            onClose={() => setError(null)}
+            style={{ marginBottom: 16 }}
+            data-testid="auth-error"
+          />
+        )}
+
+        <Tabs
+          activeKey={activeTab}
+          onChange={(key) => { setActiveTab(key); setError(null) }}
+          centered
+          data-testid="auth-tabs"
+          items={[
+            {
+              key: 'login',
+              label: 'Log In',
+              children: (
+                <Form
+                  layout="vertical"
+                  onFinish={handleLogin}
+                  autoComplete="off"
+                  data-testid="login-form"
+                >
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      { required: true, message: 'Please enter your email' },
+                      { type: 'email', message: 'Enter a valid email' },
+                    ]}
+                  >
+                    <Input
+                      prefix={<MailOutlined />}
+                      placeholder="Email"
+                      size="large"
+                      data-testid="login-email"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="password"
+                    rules={[{ required: true, message: 'Please enter your password' }]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Password"
+                      size="large"
+                      data-testid="login-password"
+                    />
+                  </Form.Item>
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      block
+                      loading={loading}
+                      className={styles.submitBtn}
+                      style={{ background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
+                      data-testid="login-submit"
+                    >
+                      Log In
+                    </Button>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+            {
+              key: 'register',
+              label: 'Create Account',
+              children: (
+                <Form
+                  layout="vertical"
+                  onFinish={handleRegister}
+                  autoComplete="off"
+                  data-testid="register-form"
+                >
+                  <Form.Item
+                    name="name"
+                    rules={[{ required: true, message: 'Please enter your full name' }]}
+                  >
+                    <Input
+                      prefix={<UserOutlined />}
+                      placeholder="Full name"
+                      size="large"
+                      data-testid="register-name"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      { required: true, message: 'Please enter your email' },
+                      { type: 'email', message: 'Enter a valid email' },
+                    ]}
+                  >
+                    <Input
+                      prefix={<MailOutlined />}
+                      placeholder="Email"
+                      size="large"
+                      data-testid="register-email"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="password"
+                    rules={[
+                      { required: true, message: 'Please enter a password' },
+                      { min: 6, message: 'Password must be at least 6 characters' },
+                    ]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Password"
+                      size="large"
+                      data-testid="register-password"
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="confirm"
+                    dependencies={['password']}
+                    rules={[
+                      { required: true, message: 'Please confirm your password' },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (!value || getFieldValue('password') === value) {
+                            return Promise.resolve()
+                          }
+                          return Promise.reject(new Error('Passwords do not match'))
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Confirm password"
+                      size="large"
+                      data-testid="register-confirm"
+                    />
+                  </Form.Item>
+                  <Form.Item>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      block
+                      loading={loading}
+                      className={styles.submitBtn}
+                      style={{ background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
+                      data-testid="register-submit"
+                    >
+                      Create Account
+                    </Button>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+          ]}
+        />
+
+        <div className={styles.footer}>
+          <Paragraph type="secondary" style={{ fontSize: 12, margin: 0 }}>
+            Demo coordinator: rfernandez@logihumanitas.cl / coord2026
+          </Paragraph>
+        </div>
+      </Card>
     </div>
   )
 }

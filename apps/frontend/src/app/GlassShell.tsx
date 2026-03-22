@@ -150,11 +150,11 @@ const useStyles = createStyles(({ css, token }) => ({
   }),
 }))
 
-const NAV = [
-  { label: 'Discover', icon: <HomeOutlined />, path: '/', match: '/' },
-  { label: 'Donor', icon: <HeartOutlined />, path: '/donor/disasters', match: '/donor' },
-  { label: 'Operator', icon: <ToolOutlined />, path: '/operator/delivery', match: '/operator' },
-  { label: 'Coordinator', icon: <TeamOutlined />, path: '/coordinator/dashboard', match: '/coordinator' },
+const NAV_ALL = [
+  { label: 'Discover', icon: <HomeOutlined />, path: '/', match: '/', roles: null },
+  { label: 'Donor', icon: <HeartOutlined />, path: '/donor/disasters', match: '/donor', roles: ['donor'] },
+  { label: 'Operator', icon: <ToolOutlined />, path: '/operator/delivery', match: '/operator', roles: null },
+  { label: 'Coordinator', icon: <TeamOutlined />, path: '/coordinator/dashboard', match: '/coordinator', roles: ['coordinator'] },
 ]
 
 export default function GlassShell({ children }: { children: React.ReactNode }) {
@@ -163,10 +163,30 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
   const router = useRouter()
   const { user, isAuthenticated, logout } = useAuth()
 
-  const isCoordinatorRoute = pathname.startsWith('/coordinator')
+  const NAV = NAV_ALL.filter(
+    (item) => item.roles === null || (user?.role && item.roles.includes(user.role)),
+  )
 
   const isActive = (match: string) =>
     match === '/' ? pathname === '/' : pathname.startsWith(match)
+
+  const handleLogout = () => {
+    const role = user?.role
+    logout()
+    router.push(role === 'coordinator' ? '/coordinator/login' : '/donor/login')
+  }
+
+  const avatarTooltip = isAuthenticated
+    ? `${user?.name} (${user?.role}) — Click to log out`
+    : 'Not logged in — Click to log in'
+
+  const handleAvatarClick = () => {
+    if (isAuthenticated) {
+      handleLogout()
+    } else {
+      router.push('/donor/login')
+    }
+  }
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
@@ -205,16 +225,18 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
 
           {/* Bottom CTAs */}
           <div className={styles.siderBottom}>
-            <Button
-              type="primary"
-              block
-              size="large"
-              style={{ borderRadius: 24, fontWeight: 700, background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
-              onClick={() => router.push('/donor/disasters')}
-              data-testid="btn-fund-campaign"
-            >
-              Fund Campaign
-            </Button>
+            {(user?.role === 'donor' || !isAuthenticated) && (
+              <Button
+                type="primary"
+                block
+                size="large"
+                style={{ borderRadius: 24, fontWeight: 700, background: '#2dd4bf', borderColor: '#2dd4bf', color: '#0f172a' }}
+                onClick={() => router.push('/donor/disasters')}
+                data-testid="btn-fund-campaign"
+              >
+                Fund Campaign
+              </Button>
+            )}
             <Button
               block
               size="middle"
@@ -225,14 +247,14 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
             >
               Register Delivery
             </Button>
-            {isCoordinatorRoute && isAuthenticated && (
+            {isAuthenticated && (
               <Button
                 block
                 size="middle"
                 icon={<LogoutOutlined />}
                 danger
                 style={{ borderRadius: 24, fontWeight: 600, background: 'transparent', border: '1px solid rgba(255,77,79,0.4)' }}
-                onClick={() => { logout(); router.push('/coordinator/login') }}
+                onClick={handleLogout}
                 data-testid="btn-logout"
               >
                 Log Out
@@ -260,11 +282,11 @@ export default function GlassShell({ children }: { children: React.ReactNode }) 
               <div className={styles.iconBtn}><WalletOutlined /></div>
             </Tooltip>
             <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
-            <Tooltip title={isAuthenticated ? `${user?.name} — Click to log out` : 'Not logged in'}>
+            <Tooltip title={avatarTooltip}>
               <Avatar
                 style={{ background: '#2dd4bf', color: '#0f172a', fontWeight: 700, cursor: 'pointer' }}
                 size={36}
-                onClick={isAuthenticated && isCoordinatorRoute ? () => { logout(); router.push('/coordinator/login') } : undefined}
+                onClick={handleAvatarClick}
                 data-testid="header-avatar"
               >
                 {isAuthenticated ? (user?.name?.[0] ?? 'U') : 'G'}

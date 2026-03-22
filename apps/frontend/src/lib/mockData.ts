@@ -225,6 +225,7 @@ export const MOCK_COORDINATOR_USERS = [
     name: 'Roberto Fernández',
     email: 'rfernandez@logihumanitas.cl',
     password: 'coord2026',
+    role: 'coordinator' as const,
     organization: 'LogiHumanitas SpA',
   },
   {
@@ -232,6 +233,26 @@ export const MOCK_COORDINATOR_USERS = [
     name: 'María López',
     email: 'mlopez@cargosolidario.cl',
     password: 'coord2026',
+    role: 'coordinator' as const,
     organization: 'CargoSolidario',
+  },
+]
+
+export const MOCK_DONOR_USERS = [
+  {
+    id: 201,
+    name: 'Elena Vargas',
+    email: 'elena@donor.com',
+    password: 'donor2026',
+    role: 'donor' as const,
+    organization: '',
+  },
+  {
+    id: 202,
+    name: 'Marco Ruiz',
+    email: 'marco@donor.com',
+    password: 'donor2026',
+    role: 'donor' as const,
+    organization: '',
   },
 ]

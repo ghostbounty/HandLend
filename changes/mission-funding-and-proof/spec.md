@@ -62,3 +62,17 @@ The system SHALL expose a readable timeline after funding.
 ## AI UX Instruction
 
 The UX flow must ensure that the donation is contextual to the disaster. Logistics companies act as capacity providers on standby. The Smart Contract (Escrow) on Avalanche receives funds at the campaign level and releases them to coordinators only after semantic validation of last-mile delivery evidence.
+
+## Planned: Wallet Linking in Settings
+
+> **Status: PLANNED — NOT IMPLEMENTED**
+
+The Settings panel (accessible from the top header) will include a Wallet Linking section allowing users to connect their crypto wallet address to their HandLend account. The implementation will:
+
+1. Display a "Connect Wallet" button in the Settings UI
+2. Capture the user's wallet address (mock: manual input of address string)
+3. Store the linked wallet address in the user profile (`wallet_address` field)
+4. Display the linked wallet address in the top header (replacing the static `0xDemo...abcd`)
+5. Use the linked wallet address when posting contribution intents to the API
+
+**AI UX Note:** The wallet linking UI must follow the same glass-morphism dark theme. The settings section must be accessible from the header wallet icon or avatar dropdown. Do not implement blockchain wallet provider integration — only capture and store the wallet address string for simulation purposes.

@@ -8,7 +8,7 @@ import {
 import {
   CheckCircleOutlined, ArrowRightOutlined,
   ClockCircleOutlined, ArrowLeftOutlined, HomeOutlined,
-  DollarOutlined, TeamOutlined, FireOutlined,
+  DollarOutlined, TeamOutlined, FireOutlined, AuditOutlined,
 } from '@ant-design/icons'
 import { createStyles } from 'antd-style'
 import { getCompaniesByDisaster } from '@/lib/api'
@@ -135,6 +135,28 @@ const useStyles = createStyles(({ css }) => ({
       filter: 'brightness(1.1)',
       transform: 'translateY(-1px)',
       boxShadow: '0 8px 24px rgba(45,212,191,0.35)',
+    },
+  }),
+  daoBtn: css({
+    width: '100%',
+    height: 44,
+    borderRadius: 14,
+    fontWeight: 700,
+    fontSize: 15,
+    background: 'rgba(45,212,191,0.08)',
+    border: '1px solid rgba(45,212,191,0.3)',
+    color: '#2dd4bf',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 10,
+    '&:hover': {
+      background: 'rgba(45,212,191,0.14)',
+      transform: 'translateY(-1px)',
+      boxShadow: '0 4px 16px rgba(45,212,191,0.2)',
     },
   }),
   /* ─── Section divider ─── */
@@ -413,6 +435,14 @@ function CampaignPoolContent() {
         <button className={styles.contributeBtn} onClick={handleContribute} data-testid="contribute-pool-btn">
           <DollarOutlined />
           Contribute to Campaign Pool
+        </button>
+        <button
+          className={styles.daoBtn}
+          onClick={() => router.push(`/dao/${disasterId}`)}
+          data-testid="view-dao-btn"
+        >
+          <AuditOutlined />
+          View DAO Status
         </button>
       </div>
 

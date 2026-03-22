@@ -4,7 +4,7 @@ export const DISASTERS = [
   {
     id: 1, name: 'Valparaíso Earthquake', country: 'Chile', event_type: 'Earthquake',
     severity: 'critical', status: 'active', created_at: '2026-03-15T08:00:00Z',
-    image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&q=80',
+    image: 'https://static.scientificamerican.com/sciam/cache/file/7F5C87CE-C719-4650-B4E8AEF44415E806_source.jpg?w=600',
     raised: 78000, goal: 100000,
     description: 'Magnitude 7.2 earthquake affects the Valparaíso region. More than 40,000 people left homeless. Urgent assistance required for food, water, and temporary shelter.'
   },
@@ -18,35 +18,35 @@ export const DISASTERS = [
   {
     id: 3, name: 'Gran Chaco Drought', country: 'Paraguay', event_type: 'Drought',
     severity: 'medium', status: 'active', created_at: '2026-02-28T09:00:00Z',
-    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80',
+    image: 'https://www.preventionweb.net/sites/default/files/styles/landscape_16_9/public/2021-09/shutterstock_1205889976.jpg?itok=khMiOA4L',
     raised: 9300, goal: 30000,
     description: 'Prolonged drought in the Chaco region impacts indigenous communities. Critical shortage of drinking water and loss of subsistence crops.'
   },
   {
     id: 4, name: 'Caribbean Coast Flooding', country: 'Colombia', event_type: 'Flood',
     severity: 'critical', status: 'active', created_at: '2026-03-18T07:30:00Z',
-    image: 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?w=600&q=80',
+    image: 'https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2000x1332+0+0/resize/1100/quality/50/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F9e%2F3e%2F4e732dd54056892779856a9ea6d5%2Fap26079767664398.jpg',
     raised: 15000, goal: 75000,
     description: 'Severe flooding on the Caribbean coast leaves over 60,000 people displaced. Roads, bridges, and health centers collapsed. Emergency food and clean water supplies are critically needed.'
   },
   {
     id: 5, name: 'Amazon Wildfire Emergency', country: 'Bolivia', event_type: 'Wildfire',
     severity: 'high', status: 'active', created_at: '2026-03-12T14:00:00Z',
-    image: 'https://images.unsplash.com/photo-1562184647-3eba5b6ada6f?w=600&q=80',
+    image: 'https://cdn.britannica.com/90/191790-050-092C8C2A/Wildfire-Stanislaus-National-Forest-California-2013.jpg',
     raised: 42000, goal: 80000,
     description: 'Out-of-control wildfires have consumed over 500,000 hectares in the Bolivian Amazon. Indigenous communities cut off from supply routes. Respiratory health emergency declared in three departments.'
   },
   {
     id: 6, name: 'Hurricane Marta', country: 'Honduras', event_type: 'Hurricane',
     severity: 'critical', status: 'active', created_at: '2026-03-20T03:00:00Z',
-    image: 'https://images.unsplash.com/photo-1527482937786-6608f6e14c15?w=600&q=80',
+    image: 'https://www.timeforkids.com/wp-content/uploads/2022/07/K1_220916_cover_hero.jpg?w=1024',
     raised: 61000, goal: 120000,
     description: 'Category 4 hurricane makes landfall on the north coast of Honduras. Entire communities swept away by storm surges. Over 80,000 people evacuated, dozens missing. Power grid destroyed.'
   },
   {
     id: 7, name: 'Tungurahua Volcanic Activity', country: 'Ecuador', event_type: 'Volcanic',
     severity: 'medium', status: 'active', created_at: '2026-03-08T11:00:00Z',
-    image: 'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?w=600&q=80',
+    image: 'https://www.preventionweb.net/sites/default/files/styles/landscape_16_9/public/2022-08/Volcano-eruption.jpg?itok=4kqi061u',
     raised: 8500, goal: 40000,
     description: 'Renewed eruptive activity at Tungurahua forces evacuation of 12,000 residents. Ashfall contaminates water sources and destroys crops across the surrounding provinces.'
   },

@@ -286,7 +286,7 @@ export default function DisastersPage() {
               <div className={styles.imgWrap}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={disaster.image || `https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80`}
+                  src={disaster.image || `https://www.preventionweb.net/sites/default/files/styles/landscape_16_9/public/2021-09/shutterstock_1205889976.jpg?itok=khMiOA4L`}
                   alt={disaster.name}
                   className={styles.img}
                 />
